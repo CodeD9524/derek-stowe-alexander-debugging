@@ -20,15 +20,17 @@ function hideAllMessages() {
 }
 
 function resetGame() {
-  // Fix here: Math.random() returns [0,1), multiply by 99, +1 to get 1-99 range
+  <light>// Corrected the syntax for generating number 1-99 </light>
   targetNumber = Math.floor(Math.random( * 9) + 1;
   guessesLeft = 5;
+
   guessInput.disabled = false;
   submitButton.disabled = false;
   guessInput.value = '';
 
   resetButton.style.display = 'none';
   hideAllMessages();
+  guessInput.focus();
 }
 
 function handleGuess() {
@@ -41,9 +43,11 @@ function handleGuess() {
     return;
   }
 
-  hideAllMessages(); // Hide old messages before showing new ones
+  hideAllMessages();
 
   guessesLeft--;
+
+  // Show guesses left and number guessed
   numberOfGuessesMsg.textContent = `You guessed: ${guess}. Tries left: ${guessesLeft}`;
   numberOfGuessesMsg.style.display = 'block';
 
@@ -69,10 +73,13 @@ function handleGuess() {
   guessInput.focus();
 }
 
+// Initialization: hide reset button and messages
 resetButton.style.display = 'none';
 hideAllMessages();
 
+// Set event listeners
 submitButton.addEventListener('click', handleGuess);
 resetButton.addEventListener('click', resetGame);
 
+// Start game on load
 resetGame();

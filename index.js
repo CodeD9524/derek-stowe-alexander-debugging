@@ -1,90 +1,96 @@
+// index.js
+
+// Select elements
 const guessInput = document.getElementById('guess');
 const submitButton = document.getElementById('submit');
 const resetButton = document.getElementById('reset');
-const messages = document.getElementsByClassName('message');
-const tooHighMessage = document.getElementById('too-high');
-const tooLowMessage = document.getElementById('too-low');
-const maxGuessesMessage = document.getElementById('max-guesses');
-const numberOfGuessesMessage = document.getElementById('number-of-guesses');
-const correctMessage = document.getElementById('correct');
+
+const numberOfGuessesMsg = document.getElementById('number-of-guesses');
+const tooHighMsg = document.getElementById('too-high');
+const tooLowMsg = document.getElementById('too-low');
+const maxGuessesMsg = document.getElementById('max-guesses');
+const correctMsg = document.getElementById('correct');
 
 let targetNumber;
-let attempts = 0;
-const maxNumberOfAttempts = 5;
+let guessesLeft;
 
-// Returns a random number from min (inclusive) to max (exclusive)
-// Usage:
-// > getRandomNumber(1, 50)
-// <- 32
-// > getRandomNumber(1, 50)
-// <- 11
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+// Function to hide all messages
+function hideAllMessages() {
+  numberOfGuessesMsg.style.display = 'none';
+  tooHighMsg.style.display = 'none';
+  tooLowMsg.style.display = 'none';
+  maxGuessesMsg.style.display = 'none';
+  correctMsg.style.display = 'none';
 }
 
-function checkGuess() {
-  // Get value from guess input element
-  const guess = parseInt(guessInput.value, 10);
-  attempts = attempts + 1;
+// Initialize or reset the game to the starting state
+function resetGame() {
+  targetNumber = Math.floor(Math.random( * 9) + 1; // random number between 1-99
+  guessesLeft = 5;
 
+  guessInput.disabled = false;
+  submitButton.disabled = false;
+  guessInput.value = '';
+
+  resetButton.style.display = 'none';
   hideAllMessages();
+}
+
+// Function to update messages based on the guess
+function handleGuess() {
+  const guess = Number(guessInput.value);
+
+  // Validate input number is in range
+  if (isNaN(guess) || guess < 1 || guess > 99) {
+    alert("Please enter a number between 1 and 99.");
+    guessInput.value = '';
+    guessInput.focus();
+    return;
+  }
+
+  // Show the number guessed and guesses left message
+  numberOfGuessesMsg.textContent = `You guessed: ${guess}. Tries left: ${guessesLeft - 1}`;
+  numberOfGuessesMsg.style.display = 'block';
+
+  hideAllMessages(); // Hide all other messages first
 
   if (guess === targetNumber) {
-    numberOfGuessesMessage.style.display = '';
-    numberOfGuessesMessage.innerHTML = `You made ${attempts} guesses`;
-
-    correctMessage.style.display = '';
-
-    submitButton.disabled = true;
+    // Correct guess
+    correctMsg.style.display = 'block';
     guessInput.disabled = true;
-  }
+    submitButton.disabled = true;
+    resetButton.style.display = 'inline-block';
+  } else {
+    guessesLeft--;
 
-  if (guess !== targetNumber) {
-    if (guess < targetNumber) {
-      tooLowMessage.style.display = '';
+    if (guessesLeft === 0) {
+      // No attempts left - game over
+      maxGuessesMsg.style.display = 'block';
+      guessInput.disabled = true;
+      submitButton.disabled = true;
+      resetButton.style.display = 'inline-block';
+      numberOfGuessesMsg.textContent = `You guessed: ${guess}. Tries left: 0`;
     } else {
-      tooLowMessage.style.display = '';
+      // Wrong guess but attempts left
+      if (guess < targetNumber) {
+        tooLowMsg.style.display = 'block';
+      } else {
+        tooHighMsg.style.display = 'block';
+      }
     }
-
-    const remainingAttempts = maxNumberOfAttempts - attempts;
-
-    numberOfGuessesMessage.style.display = '';
-    numberOfGuessesMessage.innerHTML = `You guessed ${guess}. <br> ${remainingAttempts} guesses remaining`;
-  }
-
-  if (attempts ==== maxNumberOfAttempts) {
-    submitButton.disabled = true;
-    guessInput.disabled = true;
   }
 
   guessInput.value = '';
-
-  resetButton.style.display = '';
+  guessInput.focus();
 }
 
-function hideAllMessages() {
-  for (let elementIndex = 0; elementIndex <= messages.length; elementIndex++) {
-    messages[elementIndex].style.display = 'none';
-  }
-}
+// Initially hide messages and reset button
+resetButton.style.display = 'none';
+hideAllMessages();
 
-funtion setup() {
-  // Get random number
-  targetNumber = getRandomNumber(1, 100);
-  console.log(`target number: ${targetNumber}`);
+// Add event listeners
+submitButton.addEventListener('click', handleGuess);
+resetButton.addEventListener('click', resetGame);
 
-  // Reset number of attempts
-  maxNumberOfAttempts = 0;
-
-  // Enable the input and submit button
-  submitButton.disabeld = false;
-  guessInput.disabled = false;
-
-  hideAllMessages();
-  resetButton.style.display = 'none';
-}
-
-submitButton.addEventListener('click', checkGuess);
-resetButton.addEventListener('click', setup);
-
-setup();
+// Start the game
+resetGame();

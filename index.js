@@ -13,7 +13,7 @@ let attempts = 0;
 const maxNumberOfAttempts = 5;
 
 function getRandomNumber(min, max) {
-  return Math.floor(Math.random( * max - min + 1)) + min;}
+  return Math.floor(Math.random() * (max - min + 1)) + min;}
 
 function checkGuess() {
   const guess = parseInt(guessInput.value, 10);
